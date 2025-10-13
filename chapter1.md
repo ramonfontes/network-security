@@ -346,16 +346,20 @@ def topology():
     info("*** Creating nodes\n")
     vpn1 = net.addDocker('vpn', dimage="ramonfontes/vpn", cpu_shares=20,
                          volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
-                         environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:01')
+                         environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                         mac='00:00:00:00:00:01')
     srv1 = net.addDocker('srv1', dimage="ramonfontes/seguranca", cpu_shares=20,
                           volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
-                          environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:04')
+                          environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                          mac='00:00:00:00:00:04')
     srv2 = net.addDocker('srv2', dimage="ramonfontes/seguranca", cpu_shares=20,
                           volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
-                          environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:05')
+                          environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                          mac='00:00:00:00:00:05')
     client1 = net.addDocker('client', dimage="ramonfontes/seguranca", cpu_shares=20,
                             volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
-                            environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:02',
+                            environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                            mac='00:00:00:00:00:02',
                             ip='10.201.0.1/24')
     s1 = net.addSwitch('s1', failMode='standalone')
     s2 = net.addSwitch('s2', failMode='standalone')

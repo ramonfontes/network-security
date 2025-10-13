@@ -84,10 +84,12 @@ def topology():
     s1 = net.addSwitch('s1', failMode="standalone")
     alice1 = net.addDocker('alice', dimage="ramonfontes/seguranca", cpu_shares=20,
                            volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
-                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:01')
+                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                           mac='00:00:00:00:00:01')
     bob1 = net.addDocker('bob', dimage="ramonfontes/seguranca", cpu_shares=20,
                          volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
-                         environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:02')
+                         environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                         mac='00:00:00:00:00:02')
 
     info("*** Creating Links\n")
     net.addLink(s1, alice1)
@@ -218,13 +220,16 @@ def topology():
     s1 = net.addSwitch('s1', failMode="standalone")
     alice1 = net.addDocker('alice', dimage="ramonfontes/seguranca", cpu_shares=20,
                            volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'], privileged=True,
-                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:01')
+                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                           mac='00:00:00:00:00:01')
     bob1 = net.addDocker('bob', dimage="ramonfontes/seguranca", cpu_shares=20,
                          volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'], privileged=True,
-                         environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:02')
+                         environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                         mac='00:00:00:00:00:02')
     chuck1 = net.addDocker('chuck', dimage="ramonfontes/seguranca", cpu_shares=20,
                            volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'], privileged=True,
-                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:03')
+                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                           mac='00:00:00:00:00:03')
 
     info("*** Creating Links\n")
     net.addLink(s1, alice1)
@@ -371,13 +376,16 @@ def topology():
     s1 = net.addSwitch('s1', failMode="standalone")
     alice1 = net.addDocker('alice', dimage="ramonfontes/seguranca", cpu_shares=20,
                            volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'], privileged=True,
-                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:01')
+                           environment={'DISPLAY':":{}".format(DISPLAY_ID)},
+                           mac='00:00:00:00:00:01')
     bob1 = net.addDocker('bob', dimage="ramonfontes/seguranca", cpu_shares=20,
                          volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'], privileged=True,
-                         environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:02')
+                         environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                         mac='00:00:00:00:00:02')
     chuck1 = net.addDocker('chuck', dimage="ramonfontes/seguranca", cpu_shares=20,
                            volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'], privileged=True,
-                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:03')
+                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                           mac='00:00:00:00:00:03')
 
     info("*** Creating Links\n")
     net.addLink(s1, alice1)
@@ -536,16 +544,16 @@ def topology():
     info("*** Creating nodes\n")
     proxy1 = net.addDocker('proxy', dimage="ramonfontes/proxy", cpu_shares=20,
                          volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
-                         environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:01',
-                         ip='10.200.0.100/24')
+                         environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                         mac='00:00:00:00:00:01', ip='10.200.0.100/24')
     client1 = net.addDocker('client1', dimage="ramonfontes/seguranca", cpu_shares=20,
                             volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
-                            environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:02',
-                            ip='10.200.0.1/24')
+                            environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                            mac='00:00:00:00:00:02', ip='10.200.0.1/24')
     client2 = net.addDocker('client2', dimage="ramonfontes/seguranca", cpu_shares=20,
                             volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
-                            environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:03',
-                            ip='10.200.0.2/24')
+                            environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                            mac='00:00:00:00:00:03', ip='10.200.0.2/24')
     s1 = net.addSwitch('s1', failMode='standalone')
     s2 = net.addSwitch('s2', failMode='standalone')
 

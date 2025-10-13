@@ -39,10 +39,12 @@ def topology():
     s1 = net.addSwitch('s1', failMode="standalone")
     alice1 = net.addDocker('alice', dimage="ramonfontes/seguranca", cpu_shares=20,
                            volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
-                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:01')
+                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                           mac='00:00:00:00:00:01')
     chuck1 = net.addDocker('chuck', dimage="ramonfontes/seguranca", cpu_shares=20,
                            volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
-                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:02')
+                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                           mac='00:00:00:00:00:02')
 
     info("*** Creating Links\n")
     net.addLink(s1, alice1)
@@ -148,7 +150,7 @@ Features:
 
 **Important**: Scapy requires root privileges to send/receive raw packets (e.g., sudo python3 script.py). Only scan systems you own or are authorized to test.
 
-### Scapy Project Example: Network Scanning
+#### Scapy Project Example: Network Scanning
 
 Here's a simple example of a port scanning project:
 
@@ -222,10 +224,12 @@ def topology():
     s1 = net.addSwitch('s1', failMode="standalone")
     alice1 = net.addDocker('alice', dimage="ramonfontes/seguranca", cpu_shares=20,
                            volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
-                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:01')
+                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                           mac='00:00:00:00:00:01')
     chuck1 = net.addDocker('chuck', dimage="ramonfontes/openvas", cpu_shares=20,
                            volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw', 'openvas:/data'],
-                           environment={'DISPLAY':":{}".format(DISPLAY_ID), 'PASSWORD': "seg"}, mac='00:00:00:00:00:02')
+                           environment={'DISPLAY':":{}".format(DISPLAY_ID), 'PASSWORD': "seg"}, 
+                           mac='00:00:00:00:00:02')
 
     info("*** Creating Links\n")
     net.addLink(s1, alice1)
