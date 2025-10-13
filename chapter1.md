@@ -26,6 +26,24 @@ $ sudo docker pull ramonfontes/rogue-ap
 The image `ramonfontes/seguranca` contains the following packages:
 iptables, nmap, hping3, apache2, dsniff, ettercap-text-only, arpon, curl, sudo, nano, firefox, telnet, openssh-server, ethtool, iproute2, iputils-ping, net-tools, wireshark, tcpdump, aircrack-ng, iperf, gnupg, pciutils, wpasupplicant, snort, metasploit-framework, python3-scapy, netcat, busybox, sshuttle.
 
+### Tips
+
+- To customize the appearance of xterm, add the following lines to ~/.Xresources:
+
+```
+xterm*faceName: fixed
+xterm*faceSize: 18
+```
+
+Then load the new settings with:
+
+```
+xrdb -merge ~/.Xresources
+```
+
+- You may need to set the Python variable DISPLAY_ID to 0 in each Python script to correctly run GUI‑dependent programs (for example, Wireshark or Firefox).
+
+
 For exercises that require authentication, consider both the username and the password to be the same word found in /john/run/passwd.txt. To find the username and password, run the command below from a container of the `ramonfontes/seguranca` image:
 
 ````commandline
@@ -266,9 +284,6 @@ sudo systemctl restart auditd.service
 
 Now, every time your system boots, auditd will automatically start monitoring everything you’ve configured.
 
-#### References
-
-- Configure Linux system auditing with auditd - https://www.redhat.com/pt-br/blog/configure-linux-auditing-auditd 
 
 <a name="communication-security"></a>
 ## Communication Security
@@ -584,3 +599,9 @@ Supported arguments:
   AHTU    — AH in Tunnel mode
   AHESTU  — AH + ESP in Tunnel mode (not supported yet)
 ```
+
+
+## References
+
+- Configure Linux system auditing with auditd - https://www.redhat.com/pt-br/blog/configure-linux-auditing-auditd
+- IP Security (IPsec) and Internet Key Exchange (IKE) Document Roadmap - https://datatracker.ietf.org/doc/html/rfc6071
