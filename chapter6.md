@@ -404,14 +404,268 @@ chuck-msf auxiliary (scanner/ssh/ssh_login) > exploit
 In Alice's Wireshark, it is possible to observe all the SSH requests made by Chuck, while after some time, in Chuck's terminal, a valid username and password combination appears that Chuck can now use to access Alice via SSH.
 
 
+#### Meterpreter Challenge
+
+Meterpreter is an advanced and extensible payload attack metasploit that provides an interactive shell from which an attacker can exploit the target machine and execute code. It communicates with the target machine via sockets and provides a comprehensive client-side Ruby API. It supports command history, tab completion, pipes, and more. It has the following features:
+
+- Meterpreter resides entirely in memory and does not write anything to disk.
+- No new processes are created, as Meterpreter injects itself into the compromised process and can easily migrate to other running processes.
+- By default, Meterpreter uses encrypted communications.
+
+##### Meterpreter (Reverse Shell)
+
+Attack Script: Chuck wants to access Alice's computer, but Chuck is unaware of any security holes on Alice's computer. Therefore, he intends to use Meterpreter, available in the metasploit-framework package, to gain access to Alice's computer. His goal is to implement this scenario using the code below as a basis. Don't forget to answer how this attack can be prevented.
+
+Additional Information:
+- You can execute something on Alice to simulate her clicking (opening?) something. For example, you can open a page on Alice as if it were an action performed by her.
+- Use MSFVenom
+
+```
+#!/usr/bin/python
+
+'''@author: Ramon Fontes
+   @email: ramon.fontes@imd.ufrn.br'''
+
+import os
+
+from containernet.net import Containernet
+from containernet.cli import CLI
+from mininet.log import info, setLogLevel
+
+
+def topology():
+    "Create a network."
+    DISPLAY_ID = 0
+    net = Containernet(ipBase='10.200.0.0/24')
+
+    os.system('sudo xhost +local:docker')
+    os.system('export DISPLAY=:{}'.format(DISPLAY_ID))
+
+    info("*** Creating nodes\n")
+    s1 = net.addSwitch('s1', failMode="standalone")
+    alice1 = net.addDocker('alice', dimage="ramonfontes/seguranca", cpu_shares=20,
+                           volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
+                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                           mac='00:00:00:00:00:01')
+    chuck1 = net.addDocker('chuck', dimage="ramonfontes/seguranca", cpu_shares=20,
+                           volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
+                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                           mac='00:00:00:00:00:02')
+
+    info("*** Creating Links\n")
+    net.addLink(s1, alice1)
+    net.addLink(s1, chuck1)
+
+    info("*** Starting network\n")
+    net.build()
+    s1.start([])
+
+    info("*** Running CLI\n")
+    CLI(net)
+
+    info("*** Stopping network\n")
+    net.stop()
+
+
+if __name__ == '__main__':
+    setLogLevel('info')
+    topology()
+```
+
 <a name="brute-force"></a>
 ## Brute Force
+
+A brute force attack systematically tests all possible password or username combinations on a system until valid credentials are found. The goal of a brute force attack is to gain unauthorized access to a system. This not only risks the loss of sensitive data but also opens the possibility of privilege escalation for the attacker. If the compromised credentials have administrator-level access, this can result in complete system takeover.
+
+To perform the brute force attack, we will use the Damn Vulnerable Web Application (DVWA), which is an extremely vulnerable PHP/MySQL web application. Its main purpose is to help security professionals test their skills and tools in a legal environment, help web developers better understand web application protection processes, and help students and teachers learn about web application security in a controlled environment.
+
+The goal of the DVWA is to practice some of the most common web vulnerabilities, with various difficulty levels, using a simple and straightforward interface. Please note that there are both documented and undocumented vulnerabilities in this software. This is intentional. You are encouraged to try to figure out as many problems as possible.
+
+The DVWA /vulnerabilities/brute address is vulnerable to brute-force attacks against user authentication because it lacks adequate security measures. We will attempt to successfully obtain the administrator account password and access the Secure Administrative Area.
 
 <a name="sql-injection"></a>
 ## SQL Injection
 
+SQL Injection (SQLi) is a security vulnerability that allows an attacker to interfere with SQL queries an application sends to the database. It occurs when the application fails to properly validate or sanitize user input, allowing entered data to be interpreted as SQL commands.
+
+**How it works:** Normally, a secure application would treat user input as data, not as part of the SQL statement.  However, on a vulnerable system, the code might look something like:
+
+```
+$username = $_POST['username'];
+$password = $_POST['password'];
+
+$query = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
+```
+
+And if the user enters:
+```
+admin' OR '1'='1 --
+```
+
+The resulting query will be:
+```
+SELECT * FROM users WHERE username = 'admin' OR '1'='1' -- ' AND password = 'anything'
+```
+
+For this exercise, consider running the code below. Running this code will automatically open a window to the web server that can be exploited in attacks.
+```
+#!/usr/bin/python
+
+'''@author: Ramon Fontes
+   @email: ramon.fontes@imd.ufrn.br'''
+
+import os
+
+from containernet.net import Containernet
+from containernet.cli import CLI
+from containernet.term import makeTerm
+from mininet.log import info, setLogLevel
+
+
+def topology():
+    "Create a network."
+    DISPLAY_ID = 0
+    net = Containernet(ipBase='10.200.0.0/24')
+
+    os.system('sudo xhost +local:docker')
+    os.system('export DISPLAY=:{}'.format(DISPLAY_ID))
+
+    info("*** Creating nodes\n")
+    s1 = net.addSwitch('s1', failMode="standalone")
+    webserver1 = net.addDocker('webserver', dimage="ramonfontes/xss_attack", cpu_shares=20,
+                               volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
+                               environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:01')
+    chuck1 = net.addDocker('chuck', dimage="ramonfontes/seguranca", cpu_shares=20,
+                           volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
+                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:02')
+
+    info("*** Creating Links\n")
+    net.addLink(s1, webserver1)
+    net.addLink(s1, chuck1)
+
+    info("*** Starting network\n")
+    net.build()
+    s1.start([])
+
+    webserver1.cmd("echo \'10.200.0.1 webserver\' > /etc/hosts")
+    chuck1.cmd("echo \'10.200.0.1 mysite.com\' > /etc/hosts")
+    makeTerm(webserver1, cmd="bash -c './main.sh'")
+
+    info("*** Running CLI\n")
+    CLI(net)
+
+    info("*** Stopping network\n")
+    net.stop()
+
+
+if __name__ == '__main__':
+    setLogLevel('info')
+    topology()
+```
+
+After executing the code, open Firefox from a terminal in Chuck and go to http://mysite.com/vulnerabilities/brute. Then, log in using the admin/password credentials, click the Create/Reset Database button, and log in again using your login credentials.
+
+After accessing /vulnerabilities/brute, access "low.php" using the "view source" button in the footer and observe its contents. Then, enter the data as shown in the image below and confirm your successful login.
+
 <a name="xss-attack"></a>
 ## XSS Attack
+
+
+Cross-Site Scripting (XSS) is a vulnerability that allows an attacker to inject malicious JavaScript code into pages viewed by other users. This code executes in the victim's browser, but with the context and permissions of the legitimate site, which can allow information theft, user interface manipulation, and even account takeover.
+
+**How it works:** A vulnerable website displays user-entered data without properly validating or filtering the content. This allows an attacker to insert malicious scripts that are then sent back and executed in the browser of anyone accessing the page.
+
+Vulnerable example:
+
+```
+<!-- The website directly displays the name the user entered -->
+<p>Hello, <?php echo $_GET['name']; ?>!</p>
+```
+
+If the attacker accesses:
+
+```
+http://site.com/?nome=<script>alert('XSS')</script>
+```
+
+The victim's browser executes:
+```
+alert('XSS');
+```
+
+showing that JavaScript was successfully injected.
+
+For this exercise, consider running the code below. Running this code will automatically open a window to the web server that can be exploited in attacks.
+
+```
+#!/usr/bin/python
+
+'''@author: Ramon Fontes
+   @email: ramon.fontes@imd.ufrn.br'''
+
+import os
+
+from containernet.net import Containernet
+from containernet.cli import CLI
+from containernet.term import makeTerm
+from mininet.log import info, setLogLevel
+
+
+def topology():
+    "Create a network."
+    DISPLAY_ID = 0
+    net = Containernet(ipBase='10.200.0.0/24')
+
+    os.system('sudo xhost +local:docker')
+    os.system('export DISPLAY=:{}'.format(DISPLAY_ID))
+
+    info("*** Creating nodes\n")
+    s1 = net.addSwitch('s1', failMode="standalone")
+    webserver1 = net.addDocker('webserver', dimage="ramonfontes/xss_attack", cpu_shares=20,
+                               volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
+                               environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:01')
+    chuck1 = net.addDocker('chuck', dimage="ramonfontes/seguranca", cpu_shares=20,
+                           volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
+                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:02')
+
+    info("*** Creating Links\n")
+    net.addLink(s1, webserver1)
+    net.addLink(s1, chuck1)
+
+    info("*** Starting network\n")
+    net.build()
+    s1.start([])
+
+    webserver1.cmd("echo \'10.200.0.1 webserver\' > /etc/hosts")
+    chuck1.cmd("echo \'10.200.0.1 mysite.com\' > /etc/hosts")
+    makeTerm(webserver1, cmd="bash -c './main.sh'")
+
+    info("*** Running CLI\n")
+    CLI(net)
+
+    info("*** Stopping network\n")
+    net.stop()
+
+
+if __name__ == '__main__':
+    setLogLevel('info')
+    topology()
+```
+
+After running the code, open Firefox from a terminal in Chuck and access the following address: http://mysite.com/vulnerabilities/xss_r/.
+
+In this exercise, we will execute Reflected XSS, which is a type of vulnerability in which the malicious code is not stored on the server, but rather immediately reflected in the application's response, typically from parameters submitted by the user.
+
+It occurs when:
+- The attacker sends data (via URL, form, or HTTP header).
+- The server inserts this data directly into the response page without validation or sanitization.
+- The victim's browser executes the malicious code as if it were a legitimate part of the website.
+To perform Reflected XSS, try the XSS payload in the input field:
+
+
+```
+<script>alert('Reflected XSS')</script>
+```
 
 
 ## References
@@ -421,4 +675,5 @@ In Alice's Wireshark, it is possible to observe all the SSH requests made by Chu
 - Holik, Filip, et al. "Effective penetration testing with Metasploit framework and methodologies." 2014 IEEE 15th International Symposium on Computational Intelligence and Informatics (CINTI). IEEE, 2014.
 - Maynor, David. Metasploit toolkit for penetration testing, exploit development, and vulnerability research. Elsevier, 2011.
 - Metasploitable 2 Exploitability Guide: https://docs.rapid7.com/metasploit/metasploitable-2-exploitability-guide
+- https://github.com/digininja/DVWA
 

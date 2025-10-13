@@ -14,10 +14,12 @@ Collectively, these topics provide a comprehensive foundation for understanding,
 Some of the operations described in this document are illegal and may lead to criminal or civil prosecution. The purpose of this document is to present these actions (and the associated tools) for educational purposes only. Readers are strongly advised to attempt any attacks only on virtual nodes created using the Mininet-WiFi emulator or on systems for which they have explicit authorization. The author of this document disclaims any responsibility for actions taken by participants that violate this policy or applicable law.
 
 
+## Note
+
+Most of the examples here are fully reproducible, though you may find a few harder to follow - I developed this material while teaching and sometimes filled gaps live during class. I welcome contributions to complete and clarify any missing parts. If you spot an issue or want to improve an example, please contribute!
+
 ## Table of Contents
 
-* This repository currently includes partial content from:
-https://docs.google.com/document/d/1bHnAAk1UvePMyo3W-KazWQrRUl47yMMHT2mweD-a-Y8/edit?usp=sharing
 ---
 
 - [Environment Setup and Basic Concepts](chapter1.md#environment-setup-and-basic-concepts)  
