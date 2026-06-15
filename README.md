@@ -43,6 +43,7 @@ Most of the examples here are fully reproducible, though you may find a few hard
   - [OpenVAS](chapter3.md#openvas)  
 - [Network Traffic Capture and Manipulation](chapter4.md#network-traffic-capture-and-manipulation)  
   - [ARP Spoofing](chapter4.md#arp-spoofing)  
+  - [DNS Spoofing](chapter4.md#dns-spoofing)  
   - [Passive Eavesdropping Attack](chapter4.md#passive-eavesdropping-attack)  
   - [TCP Session Hijacking](chapter4.md#tcp-session-hijacking)  
   - [Denial of Service](chapter4.md#denial-of-service)  
