@@ -63,7 +63,7 @@ def topology():
                            mac='00:00:00:00:00:02')
 
     net.addLink(alice1, s1)
-    net.addLink(chuck1, s1)
+    net.addLink(chuck1, s1, delay="10ms")
 
     info("*** Starting network\n")
     net.build()
