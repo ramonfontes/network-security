@@ -128,13 +128,13 @@ Next, Alice starts the SSH and Apache2 services, and Bob checks whether he can r
 bob# ping 10.200.0.1
 ```
 
-Alice checks the HTTP connection via telnet:
+Now he checks the HTTP connection via telnet:
 
 ```
 bob# telnet 10.200.0.1 80
 ```
 
-She then connects to Alice's SSH server (the password for user seg is seg):
+Then he connects to Alice's SSH server (the password for user seg is seg):
 
 ```
 bob# ssh seg@10.200.0.1
