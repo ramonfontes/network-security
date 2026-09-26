@@ -443,13 +443,6 @@ Note: A firewall is a device used to monitor incoming and outgoing network traff
 
 ### Bandwidth Limitation
 
-First of all, you have to delete the Alice and Bob static routing rules:
-
-```
-alice# ip route del 10.200.0.2
-bob# ip route del 10.200.0.1
-```
-
 Now Chuck flushes the current FORWARD rules again:
 
 ```
