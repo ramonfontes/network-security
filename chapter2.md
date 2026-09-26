@@ -547,8 +547,10 @@ def topology():
                             volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
                             environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
                             mac='00:00:00:00:00:03', ip='10.200.0.2/24')
-    s1 = net.addSwitch('s1', failMode='standalone')
+
     s2 = net.addSwitch('s2', failMode='standalone')
+    s1 = net.addSwitch('s1', failMode='standalone')
+
 
     info("*** Creating Links\n")
     net.addLink(client1, s2)
