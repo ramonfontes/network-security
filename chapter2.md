@@ -349,7 +349,7 @@ In this exercise, Chuck will act as a firewall between Alice and Bob. Specifical
 Stateful inspection monitors incoming and outgoing packets over time, along with the connection state, and stores this data in dynamic state tables. These cumulative data are evaluated so that filtering decisions are not based solely on administrator-defined rules but also on the context built by previous connections and earlier packets belonging to the same connection.
 
 
-For this exercise, consider running the code provided below and open terminals for the hosts Alice, Bob, and Chuck, and, immediately after running the script below, follow the same configuration as in the previous exercise up to the “Outgoing Traffic” section.
+For this exercise, consider running the code provided below and open terminals for the hosts Alice, Bob, and Chuck, and, immediately after running the script below, follow the same configuration as in the previous exercise from "Stateless Packet Filter" up to the “Outgoing Traffic” section.
 
 ```
 #!/usr/bin/python
@@ -433,7 +433,7 @@ chuck# iptables -A FORWARD -p tcp -s 10.200.0.1 --dport 80 --syn -j ACCEPT
 chuck# iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
 ```
 
-The first rule allows forwarding of all TCP SYN packets originating from Alice and destined for port 80, while the second rule uses stateful inspection, accepting all packets belonging to an already established or related connection.The first rule allows forwarding of all TCP SYN packets originating from Alice and destined for port 80, while the second rule uses stateful inspection, accepting all packets belonging to an already established or related connection.
+The first rule allows forwarding of all TCP SYN packets originating from Alice and destined for port 80, while the second rule uses stateful inspection, accepting all packets belonging to an already established or related connection. The first rule allows forwarding of all TCP SYN packets originating from Alice and destined for port 80, while the second rule uses stateful inspection, accepting all packets belonging to an already established or related connection.
 
 The advantages of this solution are that no traffic is statically enabled for Alice, and traffic is dynamically permitted on demand for precise destinations (i.e., specific IP addresses).
 
