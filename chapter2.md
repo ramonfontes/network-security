@@ -441,13 +441,6 @@ Finally, after enabling the Apache2 service on both hosts, verify that with thes
 
 Note: A firewall is a device used to monitor incoming and outgoing network traffic based on defined rules. It serves as a barrier between a private internal network and the public Internet. The basic function of a firewall is to allow essential traffic and block threats. However, a firewall does not “magically” detect and block harmful traffic—it must follow rules written by humans, which means errors are possible. One common error is allowing ALL external traffic on essential ports like 21 (FTP), 53 (DNS), 80 (HTTP), 443 (HTTPS), 8080 (alternative HTTP), etc. Initially, this may seem necessary, but the key issue is allowing ALL traffic. A correct firewall configuration would allow only RELATED and ESTABLISHED external traffic, meaning inbound traffic is permitted only if the connection was initiated from inside the network. Misconfigurations can be exploited using techniques such as source port manipulation (--source-port in Nmap).
 
-The advantages of this solution are that no traffic is statically enabled for Alice, and traffic is dynamically permitted on demand for precise destinations (i.e., specific IP addresses).
-
-Finally, after enabling the Apache2 service on both hosts, verify that with these rules, Alice can connect to any external web server, while Bob cannot connect to Alice’s web server.
-
-**Note**: A firewall is a device used to monitor incoming and outgoing network traffic based on defined rules. It serves as a barrier between a private internal network and the public Internet. The basic function of a firewall is to allow essential traffic and block threats. However, a firewall does not “magically” detect and block harmful traffic—it must follow rules written by humans, which means errors are possible. One common error is allowing ALL external traffic on essential ports like 21 (FTP), 53 (DNS), 80 (HTTP), 443 (HTTPS), 8080 (alternative HTTP), etc. Initially, this may seem necessary, but the key issue is allowing ALL traffic. A correct firewall configuration would allow only RELATED and ESTABLISHED external traffic, meaning inbound traffic is permitted only if the connection was initiated from inside the network. Misconfigurations can be exploited using techniques such as source port manipulation (--source-port in Nmap).
-
-
 ### Bandwidth Limitation
 
 First of all, you have to delete the Alice and Bob static routing rules:
