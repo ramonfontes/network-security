@@ -517,7 +517,7 @@ The network topology for this lab resembles the network topology shown below.
  client2
 ```
 
-At this point, you should refer to the video provided by the instructor to reproduce the code below.
+At this point, you should refer to the video available at https://www.youtube.com/watch?v=jbEBBhA--zU. In this video you will learn on how the network topology illustrated in the script below works and how to configure an HTTP proxy.
 
 ```
 #!/usr/bin/python
@@ -592,6 +592,8 @@ if __name__ == '__main__':
     setLogLevel('info')
     topology()
 ```
+
+After reproducing the script above, try configuring Squid to enable the HTTPs proxy. 
 
 
 ## References:
