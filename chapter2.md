@@ -134,7 +134,7 @@ Now he checks the HTTP connection via telnet:
 bob# telnet 10.200.0.1 80
 ```
 
-Then he connects to Alice's SSH server (the password for user seg is seg):
+Then he connects to Alice's SSH server (credentials: seg:seg):
 
 ```
 bob# ssh seg@10.200.0.1
@@ -287,7 +287,7 @@ chuck# iptables -A FORWARD -p tcp -s 10.200.0.1 --dport 80 -j ACCEPT
 chuck# iptables -A FORWARD -p tcp -d 10.200.0.1 --sport 80 -j ACCEPT
 ```
 
-With these commands, the default policy for the FORWARD chain is set to DROP, but two rules are added to allow forwarding of any packet from Alice's address destined for port 80 on another host, and any packet originating from source port 80 on a host and destined for Alice’s address. This means Alice can connect to the web server running on Bob (or any other web server), but she cannot connect to Bob’s SSH server (remember the password for user seg is seg):
+With these commands, the default policy for the FORWARD chain is set to DROP, but two rules are added to allow forwarding of any packet from Alice's address destined for port 80 on another host, and any packet originating from source port 80 on a host and destined for Alice’s address. This means Alice can connect to the web server running on Bob (or any other web server), but she cannot connect to Bob’s SSH server (remember the credentials: seg:seg):
 
 ```
 alice# ssh seg@10.200.0.2
