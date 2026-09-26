@@ -269,6 +269,7 @@ To act as a firewall, Chuck must disable ICMP redirect packet sending so that pa
 
 ```
 chuck# echo 0 > /proc/sys/net/ipv4/conf/all/send_redirects
+chuck# echo 0 > /proc/sys/net/ipv4/conf/chuck-eth0/send_redirects
 chuck# echo 1 > /proc/sys/net/ipv4/ip_forward
 ```
 
