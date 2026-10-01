@@ -103,7 +103,7 @@ containernet> xterm chuck
 Then, in the chuck terminal perform the attack with the command below:
 
 ```
-chuck# arpspoof -i chuck-eth0 -t 10.200.0.1 10.200.0.4
+chuck# arpspoof -i chuck-eth0 -t 10.200.0.1 10.200.0.3
 ```
 
 At this point on, Chuck can even use simple tools like SSLStrip (available at /sslstrip) to perform attacks on HTTPS (Hyper Text Transfer Protocol Secure) via protocol downgrade.
