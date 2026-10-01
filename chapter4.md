@@ -269,7 +269,7 @@ from containernet.net import Containernet
 
 def topology():
     "Create a network."
-    DISPLAY_ID = 1
+    DISPLAY_ID = 0
     net = Containernet(ipBase='10.200.0.0/24')
 
     os.system('sudo xhost +local:docker')
