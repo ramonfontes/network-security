@@ -174,7 +174,9 @@ if __name__ == '__main__':
     topology()
 ```
 
-Next, execute the ARP spoofing attack as described above, and then run the following code from Chuck's terminal.
+Next, execute the ARP spoofing attack as described above, and then run the following code from Chuck's terminal.  
+
+*Note*: The target must be the gateway!  
 
 ```commandline
 import os
