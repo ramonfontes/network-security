@@ -362,8 +362,7 @@ Another form of protection is the implementation of network firewalls and intrus
 
 It's also important to keep systems and software updated with the latest security patches to avoid known vulnerabilities that could be exploited by attackers. Furthermore, implementing good security practices, such as using strong passwords, two-factor authentication, and limiting access to critical systems, can significantly reduce the risk of a successful TCP Session Hijacking attack.
 
-
-**Challenge**: Considering the network topology below, demonstrate TCP Session Hijacking through a video.
+To reproduce this scenario, run the script below.
 
 ``` 
 #!/usr/bin/python
@@ -426,7 +425,7 @@ if __name__ == '__main__':
     topology()
 ```
 
-To do this, consider the following scenario: Bob connects via telnet to Alice, and Chuck monitors all Bob's traffic destined for Alice. Chuck then uses the information from the last TCP packet captured in the communication between Bob and Alice after the telnet session was established, modifies the Python file below with the relevant information from the captured TCP traffic, and executes the Python file, causing a file named <bob.txt> to be added to Alice.
+And consider the following scenario: Bob connects via telnet to Alice, and Chuck monitors all Bob's traffic destined for Alice. Chuck then uses the information from the last TCP packet captured in the communication between Bob and Alice after the telnet session was established, modifies the Python file below with the relevant information from the captured TCP traffic, and executes the Python file, causing a file named <bob.txt> to be added to Alice.
 
 ```
 from scapy.all import *
@@ -443,7 +442,17 @@ pkt = ip/tcp/data
 send(pkt)
 ```
 
-The video should contain an introduction to TCP Session Hijacking and a demonstration of all the steps taken, from starting the Telnet session between Alice and Bob to inserting the file on Alice's machine.
+To make it possible, Chuck has to capture the exact Sequence Number (Seq) and Acknowledgment Number (Ack) from the last legitimate TCP packet sent between Bob and Alice.
+
+Specifically, to successfully inject the malicious payload without dropping the existing connection immediately, Chuck must calculate the fields for his forged packet as follows:
+- Source IP (src) & Source Port (sport): Must match Bob's IP address (10.200.0.2) and the ephemeral port Bob is using for the Telnet session (e.g. 35466).
+- Destination IP (dst) & Destination Port (dport): Must match Alice's IP address (10.200.0.1) and the Telnet service port (23).
+- Sequence Number (seq): Chuck must set this to match the Acknowledgment Number (ack) of the last packet sent by Alice to Bob, which corresponds to the next expected Sequence Number that Alice is waiting to receive from Bob.
+- Acknowledgment Number (ack): Chuck must set this to match the Sequence Number (seq) plus the TCP payload length of the last packet sent by Bob to Alice, which acknowledges the last data Alice successfully sent.
+
+By crafting the packet with these synchronized values, Alice's TCP stack will accept the packet as a legitimate continuation of Bob's stream. Since Telnet transmits data in plain text, Alice will interpret the injected string **echo 'I love you Alice'> bob.txt\n** as a command typed directly into the shell by Bob, creating the file on her system.
+
+(Note: Shortly after this injection, the real connection between Bob and Alice will likely desynchronize, causing a "TCP ACK storm" as Alice receives a sequence number she already processed from the real Bob, but the malicious command will have already executed).
 
 <a name="denial-of-service"></a>
 ## Denial of Service
