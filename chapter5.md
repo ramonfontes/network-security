@@ -220,7 +220,7 @@ abcdefgh
 Then stop airodump and run the command below:
 
 ```
-chuck# aircrack-ng -w arquivo.psk -b 02:00:00:00:02:00 my-capture-01.cap 
+chuck# aircrack-ng -w file.psk -b 02:00:00:00:02:00 my-capture-01.cap 
 ```
 
 
