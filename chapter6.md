@@ -585,7 +585,7 @@ Vulnerable example:
 If the attacker accesses:
 
 ```
-http://mysite.com/?nome=<script>alert('XSS')</script>
+http://mysite.com/vulnerabilities/xss_r/?name=<script>alert('XSS')</script>
 ```
 
 The victim's browser executes:
